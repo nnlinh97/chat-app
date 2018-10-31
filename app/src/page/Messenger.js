@@ -31,6 +31,7 @@ class Messenger extends Component {
         if(data){
             email = data[0].email;
         }
+        // console.log(this.props.auth);
         return (
             <div className="btn-login">
                 <h1>{email}</h1>
@@ -42,6 +43,7 @@ class Messenger extends Component {
 }
 
 const mapStateToProps = (state) => {
+    console.log(state);
     return {
         users: state.firestore.ordered.users,
         auth: state.firebase.auth,
