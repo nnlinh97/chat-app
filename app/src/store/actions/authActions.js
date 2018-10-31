@@ -1,54 +1,87 @@
 import { firestore } from "firebase";
+import { ggAuth } from "../../config/fbConfig";
 
 
-export const signIn = (user) => {
-    return (dispatch, getState, { getFirestore }) => {
-        // make async call to database
+export const signIn = (callback) => {
+    return (dispatch, getState, { getFirestore, getFirebase }) => {
         const firestore = getFirestore();
-        console.log(user);
-        firestore.get({ collection: 'users', where: [['email', '==', user.email]] }).then((res) => {
-            if (res.docs.length === 0) {
-                firestore.collection('users').add({
-                    ...user
-                }).then(() => {
-                    console.log("ADD SIGNIN_SUCCESS");
-                    dispatch({ type: "SIGNIN_SUCCESS", user });
-                }).catch(err => {
-                    console.log("SIGNIN_FAIL");
-                    dispatch({ type: "SIGNIN_FAIL", err });
-                });
-            } else {
-                const id = res.docs[0].id;
-                const itemUpdate = {
-                    ...user,
-                    lastSignInTime: null
+        const firebase = getFirebase();
+
+        firebase.auth().signInWithPopup(ggAuth).then((res) => {
+            // console.log(res.user);
+            dispatch({type: 'LOGIN_SUCCESS'});
+            localStorage.setItem('login', 'logged');
+            const user = res.user;
+            callback();
+            firestore.get({collection: 'users', where: [['email', '==', user.email]]}).then((data) => {
+                if(data.docs.length == 0){
+                    firestore.collection('users').add({
+                        username: user.displayName,
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        phone: user.phoneNumber,
+                        uid: user.W.O
+                    });
                 }
-                firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
-                    console.log("SIGNIN_SUCCESS");
-                    dispatch({ type: "SIGNIN_SUCCESS", user });
-                })
-            }
+            }).catch((err) => {
+                dispatch({type: 'LOGIN_FAIL'});
+            })
         })
+
+        // console.log(user);
+        // firestore.get({ collection: 'users', where: [['email', '==', user.email]] }).then((res) => {
+        //     if (res.docs.length === 0) {
+        //         firestore.collection('users').add({
+        //             ...user
+        //         }).then(() => {
+        //             console.log("ADD SIGNIN_SUCCESS");
+        //             dispatch({ type: "SIGNIN_SUCCESS", user });
+        //         }).catch(err => {
+        //             console.log("SIGNIN_FAIL");
+        //             dispatch({ type: "SIGNIN_FAIL", err });
+        //         });
+        //     } else {
+        //         const id = res.docs[0].id;
+        //         const itemUpdate = {
+        //             ...user,
+        //             lastSignInTime: null
+        //         }
+        //         firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
+        //             console.log("SIGNIN_SUCCESS");
+        //             dispatch({ type: "SIGNIN_SUCCESS", user });
+        //         })
+        //     }
+        // })
     }
 };
 
-export const signOut = (user) => {
-    return (dispatch, getState, { getFirestore }) => {
+export const signOut = (callback) => {
+    return (dispatch, getState, { getFirestore, getFirebase }) => {
         const firestore = getFirestore();
-        firestore.get({ collection: 'users', where: [['email', '==', user.email]] }).then((res) => {
-            if (res.docs.length > 0) {
-                const id = res.docs[0].id;
-                const itemUpdate = {
-                    ...user,
-                    lastSignInTime: new Date(),
-                    online: false
-                }
-                firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
-                    console.log("SIGNOUT_SUCCESS");
-                    dispatch({ type: "SIGNOUT_SUCCESS" });
-                })
-            }
+        const firebase = getFirebase();
+        firebase.auth().signOut().then(() => {
+            localStorage.setItem('login', 'unlogged');
+            dispatch({type: 'SIGNOUT_SUCCESS'});
+        }).then(() => {
+            callback();
         })
+        .catch((err) => {
+            console.log('logout fail');
+        })
+        // firestore.get({ collection: 'users', where: [['email', '==', user.email]] }).then((res) => {
+        //     if (res.docs.length > 0) {
+        //         const id = res.docs[0].id;
+        //         const itemUpdate = {
+        //             ...user,
+        //             lastSignInTime: new Date(),
+        //             online: false
+        //         }
+        //         firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
+        //             console.log("SIGNOUT_SUCCESS");
+        //             dispatch({ type: "SIGNOUT_SUCCESS" });
+        //         })
+        //     }
+        // })
     }
 };
 

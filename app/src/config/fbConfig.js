@@ -14,4 +14,5 @@ var config = {
 firebase.initializeApp(config);
 firebase.firestore().settings({ timestampsInSnapshots: true });
 
-export default firebase 
+export const ggAuth = new firebase.auth.GoogleAuthProvider();
+export default firebase;

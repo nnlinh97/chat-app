@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import firebase from "firebase";
 import { connect } from 'react-redux';
-import {withRouter } from 'react-router-dom';
+import { withRouter, Redirect } from 'react-router-dom';
 import { signIn } from '../store/actions/authActions';
 import '../styles/login.css'
 
@@ -14,27 +14,20 @@ class Login extends Component {
     }
 
     onSignIn = () => {
-        firebase.login({ provider: 'google', type: 'popup' }).then((user) => {
-            localStorage.setItem('user', true);
-            this.props.signIn({
-                ...user.additionalUserInfo.profile,
-                lastSignInTime: null,
-                online: true
-            });
-            // this.setState({
-            //     isLogged: true
-            // })
+        this.props.signIn(() => {
             this.props.history.push('/messenger');
-        })
+        });
     }
-    
-    componentWillMount() {
-        let user = localStorage.getItem('user');
-        if(user){
+    componentDidMount() {
+        if (localStorage.getItem('login') === 'logged') {
             this.props.history.push('/messenger');
         }
     }
     render() {
+        if (localStorage.getItem('login') === 'logged') {
+            return <Redirect to='/messenger' />;
+        }
+        console.log(this.props.auth);
         return (
             <div className="container">
                 <button className="btn btn-google btn-login" type="button"
@@ -47,13 +40,18 @@ class Login extends Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+        auth: state.firebase.auth
+    }
+}
 const mapDispatchToProps = (dispatch) => {
     return {
-        signIn: (user) => dispatch(signIn(user))
+        signIn: (callback) => dispatch(signIn(callback))
     }
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(Login));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
 // export default compose(
 //     connect(mapStateToProps),
 //     firestoreConnect([
