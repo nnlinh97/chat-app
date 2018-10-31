@@ -15,15 +15,11 @@ class Login extends Component {
 
     onSignIn = () => {
         firebase.login({ provider: 'google', type: 'popup' }).then((user) => {
-            localStorage.setItem('user', JSON.stringify({
-                ...user.additionalUserInfo.profile,
-                lastSignInTime: null,
-                isLogged: true
-            }));
+            localStorage.setItem('user', true);
             this.props.signIn({
                 ...user.additionalUserInfo.profile,
                 lastSignInTime: null,
-                isLogged: true
+                online: true
             });
             // this.setState({
             //     isLogged: true
@@ -34,7 +30,7 @@ class Login extends Component {
     
     componentWillMount() {
         let user = localStorage.getItem('user');
-        if(user !== null){
+        if(user){
             this.props.history.push('/messenger');
         }
     }
