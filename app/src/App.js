@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import Login from './page/Login';
 import Messenger from './page/Messenger';
 import NotFound from './page/NotFound';
+import Home from './page/Home';
+import Message from './components/Message';
 
 class App extends Component {
   render() {
@@ -11,7 +13,8 @@ class App extends Component {
         <div>
           <Switch>
             <Route exact path='/' component={Login} />
-            <Route path='/messenger' component={Messenger} />
+            <Route path='/home' component={Messenger} />
+            <Route path='/messenger/:id' component={Home} />
             <Route path='' component={NotFound} />
           </Switch>
         </div>

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import { signOut } from '../store/actions/authActions';
+import {compose} from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { signOut } from '../store/actions/authActions';
-import {compose} from 'redux'
 import '../styles/login.css'
 import { withFirestore, firestoreConnect } from 'react-redux-firebase';
 
@@ -21,13 +21,14 @@ class Messenger extends Component {
     
 
     render() {
+        console.log(this.props.firebase);
         // console.log(this.props.auth.providerData);
         const data = this.props.auth.providerData;
         let email = '';
         if(data){
             email = data[0].email;
         }
-        // console.log(this.props.auth);
+        console.log(this.props.users);
         return (
             <div className="btn-login">
                 <h1>{email}</h1>
@@ -38,7 +39,6 @@ class Messenger extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state);
     return {
         users: state.firestore.ordered.users,
         auth: state.firebase.auth,
@@ -51,10 +51,10 @@ const mapDispatchToProps = (dispatch) => {
         signOut: (callback) => dispatch(signOut(callback)),
     }
 }
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Messenger));
-// export default withRouter(compose(
-//     connect(mapStateToProps, mapDispatchToProps),
-//     firestoreConnect([
-//         {collection: 'users'}
-//     ])
-// )(Messenger))
+// export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Messenger));
+export default withRouter(compose(
+    connect(mapStateToProps, mapDispatchToProps),
+    firestoreConnect([
+        {collection: 'users'}
+    ])
+)(Messenger))

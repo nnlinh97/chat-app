@@ -20,17 +20,17 @@ export const signIn = (callback) => {
                 lastSignInTime: null,
                 uid: user.W.O
             }
-            callback();
             firestore.get({ collection: 'users', where: [['email', '==', user.email]] }).then((data) => {
                 if (data.docs.length == 0) {
                     firestore.collection('users').add({
                         ...item
                     }).then(() => {
+                        callback(user.W.O);
                         dispatch({ type: "SIGNIN_SUCCESS", item });
                     })
                 } else {
                     const id = data.docs[0].id;
-                    firestore.update({collection: 'users', doc: id}, {...item}).then(() => {
+                    firestore.update({ collection: 'users', doc: id }, { ...item }).then(() => {
                         dispatch({ type: "SIGNIN_SUCCESS", item });
                     })
                 }
@@ -83,12 +83,12 @@ export const signOut = (callback) => {
                     lastSignInTime: new Date(),
                     online: false
                 }
+                dispatch({type: 'CLEAR_CHATING_USER'});
+                localStorage.setItem('login', 'unlogged');
+                callback();
                 firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
                     firebase.auth().signOut().then(() => {
-                        localStorage.setItem('login', 'unlogged');
                         dispatch({ type: 'SIGNOUT_SUCCESS' });
-                    }).then(() => {
-                        callback();
                     })
                 })
             }

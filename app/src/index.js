@@ -12,7 +12,7 @@ import { reactReduxFirebase, getFirebase } from 'react-redux-firebase';
 import fbConfig from './config/fbConfig'
 
 const rrfConfig = {
-  userProfile: 'users', // where profiles are stored in database
+  userProfile: 'profiles', // where profiles are stored in database
   attachAuthIsReady: true,
   useFirestoreForProfile: true
 }

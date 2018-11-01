@@ -14,20 +14,23 @@ class Login extends Component {
     }
 
     onSignIn = () => {
-        this.props.signIn(() => {
-            this.props.history.push('/messenger');
+        this.props.signIn((id) => {
+            this.props.history.push(`/messenger/${id}`);
         });
     }
     componentDidMount() {
+        console.log(this.props.auth);
+        const id = this.props.auth.uid;
         if (localStorage.getItem('login') === 'logged') {
-            this.props.history.push('/messenger');
+            this.props.history.push(`/messenger/${id}`);
         }
     }
     render() {
+        console.log(this.props.chatingUser);
+        const id = this.props.auth.uid;
         if (localStorage.getItem('login') === 'logged') {
-            return <Redirect to='/messenger' />;
+            return <Redirect to={`/messenger/${id}`} />;
         }
-        console.log(this.props.auth);
         return (
             <div className="container">
                 <button className="btn btn-google btn-login" type="button"
@@ -42,7 +45,8 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth
+        auth: state.firebase.auth,
+        chatingUser: state.chatingUser
     }
 }
 const mapDispatchToProps = (dispatch) => {
