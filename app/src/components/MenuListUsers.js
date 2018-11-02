@@ -3,6 +3,7 @@ import { withFirestore, firestoreConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import MenuUser from './MenuUser';
 
@@ -16,10 +17,10 @@ class MenuListUsers extends Component {
     }
     
     render() {
-        console.log(this.props.users);
-        const { users } = this.props;
+        console.log(_.values(this.props.users));
+        const users  = _.values(this.props.users);
         let usersList = null;
-        if (users) {
+        if (users.length > 0) {
             usersList = users.map((user, index) => {
                 return (
                     <MenuUser
@@ -39,7 +40,7 @@ class MenuListUsers extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        users: state.firestore.ordered.users,
+        users: state.firestore.data.users,
         auth: state.firebase.auth,
     }
 }
