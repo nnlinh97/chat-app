@@ -691,3 +691,12 @@ p {
   padding: 0px !important;
   padding-top: 10px;
 }
+#frame .content .message-input .wrap input{
+  padding: 14px 32px 0px 7px !important;
+
+}
+
+/* .load-image{
+  font-size: 25px;
+  margin-top: 20px;
+} */

@@ -31,13 +31,14 @@ class ListMessages extends Component {
         })
         this.scrollToBottom();
     }
-
-    scrollToBottom() {
-        const scrollHeight = this.messageList.scrollHeight;
-        const height = this.messageList.clientHeight;
-        const maxScrollTop = scrollHeight - height;
-        this.messageList.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+    componentDidUpdate(prevProps, prevState) {
+        this.scrollToBottom();
     }
+    
+
+    scrollToBottom = () => {
+        this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+      }
     render() {
         const idSender = this.props.auth.uid;
         const idReceiver = this.state.idReceiver;
@@ -61,14 +62,13 @@ class ListMessages extends Component {
         }
         return (
             <div>
-                <div
-                    className="messages"
-                    ref={(div) => {
-                        this.messageList = div;
-                    }}>
+                <div className="messages">
                     <ul>
                         {listMessage}
                     </ul>
+                    <div style={{ float: "left", clear: "both" }}
+                        ref={(el) => { this.messagesEnd = el; }}>
+                    </div>
                 </div>
                 <SendMessage />
             </div>

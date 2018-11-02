@@ -66,7 +66,7 @@ class SendMessage extends Component {
                 <div className="wrap">
                     <form onSubmit={this.onHandleSubmit} className="text-chat">
                         <input onChange={this.onHandleChange} name="message" value={value} type="text" placeholder="Write your message..." />
-                        <i className="fa fa-paperclip attachment" aria-hidden="true"></i>
+                        <i className="fa fa-image load-image" aria-hidden="true"></i>
                         <button className="submit"><i className="fa fa-paper-plane" aria-hidden="true"></i></button>
                     </form>
                 </div>
