@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 
 class Message extends Component {
     render() {
+        const {message, status} = this.props;
         return (
-            <li className="sent">
-                <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-                <p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!</p>
+            <li className={status}>
+                <img src={message.photoURL} alt="" />
+                <p title={moment(message.time.toDate()).calendar()}>{message.message}</p>
             </li>
         );
     }

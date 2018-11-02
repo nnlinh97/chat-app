@@ -16,15 +16,12 @@ class ContactProfile extends Component {
     }
     
     componentDidMount() {
-        console.log(this.props.match.params.id);
         this.setState({
             id: this.props.match.params.id
         })
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.match.params.id);
-        console.log('componentWillReceiveProps');
         this.setState({
             id: nextProps.match.params.id
         })
@@ -32,11 +29,7 @@ class ContactProfile extends Component {
     
     
     render() {
-        console.log('render');
-        // const {username, photoURL, online, lastSignInTime} = this.props.chatingUser;
         const users = _.values(this.props.users);
-        console.log(this.state.id);
-        console.log((_.find(users, {'uid': this.state.id})));
         const user = _.find(users, {'uid': this.state.id});
         let username = '';
         let photoURL = '';
