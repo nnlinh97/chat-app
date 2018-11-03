@@ -17,6 +17,7 @@ class Home extends Component {
         }
         const {id} = this.props.match.params;
         this.props.getDataUser(id);
+        console.log('componentDidMount');
     }
     componentWillReceiveProps(nextProps) {
         console.log(nextProps.match.params.id);
@@ -26,6 +27,7 @@ class Home extends Component {
 
     render() {
         // console.log(this.props.match.params.id);
+        console.log('render');
         const { auth } = this.props;
         const { displayName, photoURL } = auth;
         return (
@@ -37,10 +39,7 @@ class Home extends Component {
                             <p id="profile-name">{displayName}</p>
                         </div>
                     </div>
-                    <SearchUser />
-                    <div id="contacts">
-                        <MenuListUsers />
-                    </div>
+                    <MenuListUsers/>
                 </div>
                 <ChatContent />
             </div>

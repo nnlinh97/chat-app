@@ -5,14 +5,17 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import _ from 'lodash';
 import moment from 'moment';
-import {sendMessage} from './../store/actions/messageActions';
+import { sendMessage, sendImage } from './../store/actions/messageActions';
+import storage from '../config/fbConfig';
 
 class SendMessage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             message: '',
-            idReceiver: ''
+            idReceiver: '',
+            image: '',
+            url: ''
         }
     }
 
@@ -37,7 +40,7 @@ class SendMessage extends Component {
         });
     }
 
-    onHandleSubmit = (e) =>{
+    onHandleSubmit = (e) => {
         e.preventDefault();
         const idSender = this.props.auth.uid;
         const idReceiver = this.state.idReceiver;
@@ -47,26 +50,52 @@ class SendMessage extends Component {
             idReceiver: idReceiver,
             idSum: idSum,
             message: {
-                message: this.state.message,
+                text: this.state.message,
+                image: this.state.image,
                 idSender: idSender,
                 photoURL: this.props.auth.photoURL,
                 time: new Date()
             }
         }
-        this.props.sendMessage(message);
-        this.setState({
-            message: ''
-        })
+        if (this.state.message !== '' || this.state.image !== '') {
+            this.props.sendMessage(message);
+            this.setState({
+                message: '',
+                image: ''
+            })
+        }
+        // this.handleUpload();
     }
-    
+
+    onHandleLoadImage = (e) => {
+        console.log('load image');
+        console.log(e.target.files);
+        if (e.target.files[0]) {
+            this.setState({
+                image: e.target.files[0],
+                reset: true
+            }, () => {
+                this.setState({
+                    reset: false
+                })
+            });
+        }
+    }
+
     render() {
         let value = this.state.message;
+        console.log(this.state);
         return (
             <div className="message-input">
                 <div className="wrap">
                     <form onSubmit={this.onHandleSubmit} className="text-chat">
                         <input onChange={this.onHandleChange} name="message" value={value} type="text" placeholder="Write your message..." />
-                        <i className="fa fa-image load-image" aria-hidden="true"></i>
+                        <label htmlFor="file" className="fa fa-image load-image">
+
+                        </label>
+                        {!this.state.reset && (
+                            <input id="file" onChange={this.onHandleLoadImage} type="file" name="myfile" />
+                        )}
                         <button className="submit"><i className="fa fa-paper-plane" aria-hidden="true"></i></button>
                     </form>
                 </div>
@@ -86,7 +115,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        sendMessage: (message) => dispatch(sendMessage(message))
+        sendMessage: (message) => dispatch(sendMessage(message)),
+        sendImage: (image) => dispatch(sendImage(image))
     }
 }
 

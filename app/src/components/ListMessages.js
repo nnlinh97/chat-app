@@ -34,17 +34,16 @@ class ListMessages extends Component {
     componentDidUpdate(prevProps, prevState) {
         this.scrollToBottom();
     }
-    
+
 
     scrollToBottom = () => {
         this.messagesEnd.scrollIntoView({ behavior: "smooth" });
-      }
+    }
     render() {
         const idSender = this.props.auth.uid;
         const idReceiver = this.state.idReceiver;
         const idSum = idSender > idReceiver ? (idSender + idReceiver) : (idReceiver + idSender);
         const firestoreMessages = _.find(_.values(this.props.messages), { 'idSum': idSum });
-        console.log(firestoreMessages);
         let messages = null;
         let listMessage = '';
         if (firestoreMessages) {
@@ -61,10 +60,12 @@ class ListMessages extends Component {
             })
         }
         return (
+
             <div>
                 <div className="messages">
                     <ul>
                         {listMessage}
+                        
                     </ul>
                     <div style={{ float: "left", clear: "both" }}
                         ref={(el) => { this.messagesEnd = el; }}>
