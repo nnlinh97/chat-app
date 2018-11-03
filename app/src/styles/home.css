@@ -566,8 +566,8 @@ body {
   font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
   float: left;
   border: none;
-  width: calc(100% - 180px);
-  padding: 0px 32px 0px 7px;
+  width: calc(100% - 250px);
+  padding: 45px 32px 0px 7px;
   font-size: 1.2em;
   color: #32465a;
 }
@@ -748,6 +748,16 @@ p {
 .load-image{
   cursor: pointer;
   padding: 0px !important;
-  margin-left: 50px;
+  margin-left: 125px;
   margin-top: 27px;
+}
+
+.preview-image {
+  width: 40px;
+}
+
+.preview{
+  width: 100px;
+  margin-left: 482px;
+  display: block;
 }

@@ -15,7 +15,8 @@ class SendMessage extends Component {
             message: '',
             idReceiver: '',
             image: '',
-            url: ''
+            url: '',
+            previewURL: []
         }
         this.inputFullNameRef = React.createRef();
     }
@@ -75,31 +76,48 @@ class SendMessage extends Component {
         this.inputFullNameRef.current.focus();
         console.log('load image');
         console.log(e.target.files);
-        if (e.target.files[0]) {
-            this.setState({
-                image: e.target.files[0],
-                reset: true
-            }, () => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.onloadend = () => {
+            if (file) {
                 this.setState({
-                    reset: false
-                })
-            });
+                    image: file,
+                    reset: true,
+                    previewURL: [...this.state.previewURL, reader.result] 
+                }, () => {
+                    this.setState({
+                        reset: false
+                    })
+                });
+            }
         }
+        reader.readAsDataURL(file);
     }
-    
+
     render() {
         let value = this.state.message;
         console.log(this.state);
+        const { previewURL } = this.state;
+        let previewImage = null;
+        if (previewURL.length > 0) {
+            previewImage = previewURL.map((url, index) => {
+                return (
+                    <img className="preview-image" src={url}/>
+                )
+            })
+        }
         return (
             <div className="message-input">
                 <div className="wrap">
                     <form onSubmit={this.onHandleSubmit} className="text-chat">
-                        <input onChange={this.onHandleChange} ref={this.inputFullNameRef}  name="message" value={value} type="text" placeholder="Write your message..." />
+                        <input onChange={this.onHandleChange} ref={this.inputFullNameRef} name="message" value={value} type="text" placeholder="Write your message..." />
+                        <div className="preview">
+                            {previewImage}
+                        </div>
                         <label htmlFor="file" className="fa fa-image load-image">
-
                         </label>
                         {!this.state.reset && (
-                            <input id="file" onChange={this.onHandleLoadImage} type="file" name="myfile"  />
+                            <input id="file" onChange={this.onHandleLoadImage} type="file" name="myfile" />
                         )}
                         <button className="submit"><i className="fa fa-paper-plane" aria-hidden="true"></i></button>
                     </form>
