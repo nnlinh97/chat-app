@@ -12,7 +12,7 @@ import SearchUser from './SearchUser';
 // var findIndex = (array, name) => {
 //     let result = -1;
 //     array.forEach(element => {
-        
+
 //     });
 // }
 
@@ -37,7 +37,7 @@ class MenuListUsers extends Component {
     render() {
         console.log(_.values(this.props.users));
         console.log(this.state.keyword);
-        let {keyword} = this.state;
+        let { keyword } = this.state;
         const users = _.values(this.props.users).filter((user) => {
             return user.username.toLowerCase().indexOf(keyword) !== -1;
         })
@@ -55,7 +55,7 @@ class MenuListUsers extends Component {
         return (
             <div>
                 <div id="search">
-                    <input onChange={this.onHandleChange}  name="keyword" type="text" value={keyword} placeholder="Search contacts..." />
+                    <input onChange={this.onHandleChange} name="keyword" type="text" value={keyword} placeholder="Search contacts..." />
                 </div>
                 <div id="contacts">
                     <ul>

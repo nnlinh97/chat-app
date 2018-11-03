@@ -17,9 +17,11 @@ class SendMessage extends Component {
             image: '',
             url: ''
         }
+        this.inputFullNameRef = React.createRef();
     }
 
     componentDidMount() {
+        this.inputFullNameRef.current.focus();
         this.setState({
             idReceiver: this.props.match.params.id
         })
@@ -41,6 +43,8 @@ class SendMessage extends Component {
     }
 
     onHandleSubmit = (e) => {
+        this.inputFullNameRef.current.focus();
+        console.log('onHandleSubmit');
         e.preventDefault();
         const idSender = this.props.auth.uid;
         const idReceiver = this.state.idReceiver;
@@ -68,6 +72,7 @@ class SendMessage extends Component {
     }
 
     onHandleLoadImage = (e) => {
+        this.inputFullNameRef.current.focus();
         console.log('load image');
         console.log(e.target.files);
         if (e.target.files[0]) {
@@ -81,7 +86,7 @@ class SendMessage extends Component {
             });
         }
     }
-
+    
     render() {
         let value = this.state.message;
         console.log(this.state);
@@ -89,12 +94,12 @@ class SendMessage extends Component {
             <div className="message-input">
                 <div className="wrap">
                     <form onSubmit={this.onHandleSubmit} className="text-chat">
-                        <input onChange={this.onHandleChange} name="message" value={value} type="text" placeholder="Write your message..." />
+                        <input onChange={this.onHandleChange} ref={this.inputFullNameRef}  name="message" value={value} type="text" placeholder="Write your message..." />
                         <label htmlFor="file" className="fa fa-image load-image">
 
                         </label>
                         {!this.state.reset && (
-                            <input id="file" onChange={this.onHandleLoadImage} type="file" name="myfile" />
+                            <input id="file" onChange={this.onHandleLoadImage} type="file" name="myfile"  />
                         )}
                         <button className="submit"><i className="fa fa-paper-plane" aria-hidden="true"></i></button>
                     </form>

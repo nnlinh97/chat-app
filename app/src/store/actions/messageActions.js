@@ -2,7 +2,6 @@ import { firestore } from "firebase";
 
 
 export const sendMessage = (message) => {
-    console.log(message);
     return (dispatch, getState, { getFirestore, getFirebase }) => {
         const firestore = getFirestore();
         const firebase = getFirebase();
@@ -18,7 +17,6 @@ export const sendMessage = (message) => {
                 const image = message.message.image;
                 var uploadTask = storageRef.child('images/' + image.name).put(image, metadata);
                 uploadTask.snapshot.ref.getDownloadURL().then((imageURL) => {
-                    console.log('image available at', imageURL);
                     const itemMessage = {
                         ...message,
                         message: {
@@ -26,6 +24,7 @@ export const sendMessage = (message) => {
                             image: imageURL
                         }
                     }
+                    console.log(itemMessage);
                     if (findMessageResult.length == 0) {
                         console.log('0, image');
                         firestore.collection('messages').add({
