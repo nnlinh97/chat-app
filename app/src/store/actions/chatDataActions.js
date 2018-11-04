@@ -6,13 +6,15 @@ export const getDataUser = (id) => {
         const firebase = getFirebase();
         firestore.get({ collection: 'users', where: [['uid', '==', id]] }).then((res) => {
             // console.log(res.docs[0].data());
-            const chatingUser = res.docs[0].data();
-            dispatch(
-                {
-                    type: 'ADD_CHATING_USER',
-                    user: chatingUser
-                }
-            );
+            if(res.docs.length > 0){
+                const chatingUser = res.docs[0].data();
+                dispatch(
+                    {
+                        type: 'ADD_CHATING_USER',
+                        user: chatingUser
+                    }
+                );
+            }
         });
     }
 };

@@ -26,7 +26,7 @@ class MenuUser extends Component {
                     <div className="meta">
                         <p className="name">{username}</p>
                         <span className={online ? "contact-status online" : "contact-status busy"}></span>
-                        <p className="preview">{status}</p>
+                        <p className="status">{status}</p>
                     </div>
                 </div>
             </li>

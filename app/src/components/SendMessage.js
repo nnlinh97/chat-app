@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import _ from 'lodash';
 import moment from 'moment';
-import { sendMessage, sendImage } from './../store/actions/messageActions';
+import { sendMessage } from './../store/actions/messageActions';
+import { updatePriority } from './../store/actions/userActions';
 import storage from '../config/fbConfig';
 
 class SendMessage extends Component {
@@ -16,7 +17,8 @@ class SendMessage extends Component {
             idReceiver: '',
             image: '',
             url: '',
-            previewURL: []
+            previewURL: [],
+            images: []
         }
         this.inputFullNameRef = React.createRef();
     }
@@ -56,17 +58,26 @@ class SendMessage extends Component {
             idSum: idSum,
             message: {
                 text: this.state.message,
-                image: this.state.image,
+                images: this.state.images,
                 idSender: idSender,
                 photoURL: this.props.auth.photoURL,
                 time: new Date()
             }
         }
-        if (this.state.message !== '' || this.state.image !== '') {
+        const priorityUser = {
+            idSender: idSender,
+            idReceiver: idReceiver,
+            timeChat: new Date,
+            star: null
+        }
+        if (this.state.message !== '' || this.state.images.length > 0) {
             this.props.sendMessage(message);
+            this.props.updatePriority(priorityUser);
             this.setState({
                 message: '',
-                image: ''
+                image: '',
+                images: [],
+                previewURL: []
             })
         }
         // this.handleUpload();
@@ -74,8 +85,6 @@ class SendMessage extends Component {
 
     onHandleLoadImage = (e) => {
         this.inputFullNameRef.current.focus();
-        console.log('load image');
-        console.log(e.target.files);
         let file = e.target.files[0];
         let reader = new FileReader();
         reader.onloadend = () => {
@@ -83,7 +92,8 @@ class SendMessage extends Component {
                 this.setState({
                     image: file,
                     reset: true,
-                    previewURL: [...this.state.previewURL, reader.result] 
+                    previewURL: [...this.state.previewURL, reader.result],
+                    images: [...this.state.images, file]
                 }, () => {
                     this.setState({
                         reset: false
@@ -94,15 +104,36 @@ class SendMessage extends Component {
         reader.readAsDataURL(file);
     }
 
+    onDeletePreview = (index) => {
+        this.inputFullNameRef.current.focus();
+        let images = this.state.previewURL;
+        images.splice(index, 1);
+        this.setState({
+            previewURL: images
+        })
+    }
+
+    onEnterPress = (e) => {
+        if (e.keyCode == 13 && e.shiftKey == false) {
+            e.preventDefault();
+            this.onHandleSubmit(e);
+        }
+    }
+
+
     render() {
         let value = this.state.message;
-        console.log(this.state);
         const { previewURL } = this.state;
         let previewImage = null;
         if (previewURL.length > 0) {
             previewImage = previewURL.map((url, index) => {
                 return (
-                    <img className="preview-image" src={url}/>
+                    <div key={index} className="image-list">
+                        <span className="image-box">
+                            <span onClick={() => this.onDeletePreview(index)} className="delete">X</span>
+                            <img key={index} className="preview-image" src={url} />
+                        </span>
+                    </div>
                 )
             })
         }
@@ -110,16 +141,17 @@ class SendMessage extends Component {
             <div className="message-input">
                 <div className="wrap">
                     <form onSubmit={this.onHandleSubmit} className="text-chat">
-                        <input onChange={this.onHandleChange} ref={this.inputFullNameRef} name="message" value={value} type="text" placeholder="Write your message..." />
+                        <textarea onKeyDown={this.onEnterPress} onChange={this.onHandleChange} ref={this.inputFullNameRef} name="message" value={value} placeholder="Write your message..."></textarea>
+                        {/* <input onChange={this.onHandleChange} ref={this.inputFullNameRef} name="message" value={value} type="text" placeholder="Write your message..." /> */}
                         <div className="preview">
                             {previewImage}
                         </div>
+                        <button className="submit"><i className="fa fa-paper-plane" aria-hidden="true"></i></button>
                         <label htmlFor="file" className="fa fa-image load-image">
                         </label>
                         {!this.state.reset && (
                             <input id="file" onChange={this.onHandleLoadImage} type="file" name="myfile" />
                         )}
-                        <button className="submit"><i className="fa fa-paper-plane" aria-hidden="true"></i></button>
                     </form>
                 </div>
             </div>
@@ -139,7 +171,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         sendMessage: (message) => dispatch(sendMessage(message)),
-        sendImage: (image) => dispatch(sendImage(image))
+        updatePriority: (priorityUser) => dispatch(updatePriority(priorityUser))
     }
 }
 

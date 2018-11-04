@@ -54,6 +54,9 @@ class ContactProfile extends Component {
                 {/* <span id="name-chat-box-online"></span> */}
                 <span id={css}></span> 
                 <p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{status}</p>
+                <div className="rating-star">
+                <span className="fa fa-star unchecked"></span>
+                </div>
                 <SignOut/>
             </div>
         );

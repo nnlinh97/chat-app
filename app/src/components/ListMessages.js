@@ -61,7 +61,7 @@ class ListMessages extends Component {
         }
         return (
 
-            <div>
+            <div style={{height: '100%s'}}>
                 <div className="messages">
                     <ul>
                         {listMessage}
