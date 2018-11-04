@@ -35,9 +35,9 @@ class MenuListUsers extends Component {
     }
 
     render() {
-        console.log(_.values(this.props.users));
-        console.log(this.state.keyword);
         let { keyword } = this.state;
+        let list = _.values(this.props.users);
+        console.log(list);
         const users = _.values(this.props.users).filter((user) => {
             return user.username.toLowerCase().indexOf(keyword) !== -1;
         })

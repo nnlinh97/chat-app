@@ -2,6 +2,7 @@ import { firestore } from "firebase";
 
 
 export const sendMessage = (message) => {
+    console.log(message);
     return (dispatch, getState, { getFirestore, getFirebase }) => {
         const firestore = getFirestore();
         const firebase = getFirebase();

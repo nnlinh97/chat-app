@@ -67,8 +67,7 @@ class SendMessage extends Component {
         const priorityUser = {
             idSender: idSender,
             idReceiver: idReceiver,
-            timeChat: new Date,
-            star: null
+            timeChat: new Date
         }
         if (this.state.message !== '' || this.state.images.length > 0) {
             this.props.sendMessage(message);

@@ -2,19 +2,21 @@ import React, { Component } from 'react';
 import SignOut from './SignOut';
 import { withRouter } from 'react-router-dom';
 import { withFirestore, firestoreConnect } from 'react-redux-firebase';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { compose } from 'redux';
 import _ from 'lodash';
 import moment from 'moment';
+import {updatePriority} from './../store/actions/userActions';
 
 class ContactProfile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: ''
+            id: '',
+            star: false
         }
     }
-    
+
     componentDidMount() {
         this.setState({
             id: this.props.match.params.id
@@ -26,38 +28,55 @@ class ContactProfile extends Component {
             id: nextProps.match.params.id
         })
     }
-    
-    
+
+    onHandleStar = async () => {
+        await this.setState({
+            star: !this.state.star
+        });
+        this.props.updateUser({
+            idSender: this.props.idSender,
+            idReceiver: this.state.id,
+            star: this.state.star,
+            updateStar: true
+        });
+    }
+
+
     render() {
         const users = _.values(this.props.users);
-        const user = _.find(users, {'uid': this.state.id});
+        const user = _.find(users, { 'uid': this.state.id });
         let username = '';
         let photoURL = '';
         let online = '';
         let lastSignInTime = '';
         let status = 'online';
         let css = "name-chat-box-online";
-        if(user) {
+        if (user) {
             username = user.username;
             photoURL = user.photoURL;
             online = user.online;
             lastSignInTime = user.lastSignInTime;
-            if(!online) {
+            if (!online) {
                 status = moment(lastSignInTime.toDate()).calendar();
                 css = "name-chat-box-busy";
             }
+        }
+
+        let classStar = 'fa fa-star uncheck';
+        if (this.state.star) {
+            classStar = 'fa fa-star check'
         }
         return (
             <div className="contact-profile">
                 <img id="img-chat" src={photoURL} alt="" />
                 <p id="name-chat">{username}</p>
                 {/* <span id="name-chat-box-online"></span> */}
-                <span id={css}></span> 
+                <span id={css}></span>
                 <p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{status}</p>
                 <div className="rating-star">
-                <span className="fa fa-star unchecked"></span>
+                    <span onClick={this.onHandleStar} className={classStar}></span>
                 </div>
-                <SignOut/>
+                <SignOut />
             </div>
         );
     }
@@ -66,12 +85,14 @@ class ContactProfile extends Component {
 const mapStateToProps = (state) => {
     return {
         chatingUser: state.chatingUser,
-        users: state.firestore.data.users
+        users: state.firestore.data.users,
+        idSender: state.firebase.auth.uid
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        updateUser: (priorityUser) => dispatch(updatePriority(priorityUser))
     }
 }
 
