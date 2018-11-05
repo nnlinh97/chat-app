@@ -7,69 +7,76 @@ export const updatePriority = (priorityUser) => {
         const firestore = getFirestore();
         const firebase = getFirebase();
 
-
-        firestore.get({ collection: 'users', where: [['uid', '==', priorityUser.idSender]] }).then((res) => {
-            //mai làm thêm cái update time chat cho thèn gửi đến mình
-            //tức là firestore.get cho thèn nhận được tin nhắn, update lại priority cho thèn gửi trong thèn nhận đó
-            const findUserResult = res.docs;
-            if (findUserResult.length > 0) {
-                let priority = findUserResult[0].data().priority;
-                // let priority = user.priority;
+        let receive = firestore.get({ collection: 'users', where: [['uid', '==', priorityUser.idReceiver]] });
+        let send = firestore.get({ collection: 'users', where: [['uid', '==', priorityUser.idSender]] });
+        Promise.all([send, receive]).then(([pSend, pReceive]) => {
+            const findSendUser = pSend.docs;
+            const findReceiveUser = pReceive.docs;
+            if (findSendUser.length > 0 && findReceiveUser.length > 0) {
+                let prioritySender = findSendUser[0].data().priority;
                 if (priorityUser.timeChat) {
-                    const itemUser = {
+                    const itemSender = {
                         idUser: priorityUser.idReceiver,
                         timeChat: priorityUser.timeChat
                     }
-                    // let user = findUserResult[0].data();
-                    // let priority = user.priority;
-                    if (!priority) {
-                        priority = [itemUser];
+                    if (!prioritySender) {
+                        prioritySender = [itemSender];
                     } else {
-                        const index = _.findIndex(priority, { 'idUser': itemUser.idUser });
+                        const index = _.findIndex(prioritySender, { 'idUser': itemSender.idUser });
                         if (index !== -1) {
-                            priority[index].timeChat = itemUser.timeChat;
+                            prioritySender[index].timeChat = itemSender.timeChat;
                         } else {
-                            priority.push(itemUser);
+                            prioritySender.push(itemSender);
                         }
                     }
-                    const id = findUserResult[0].id;
-                    firestore.update({ collection: 'users', doc: id }, { priority }).then(() => {
+
+                    let priorityReceiver = findReceiveUser[0].data().priority;
+                    const itemReceiver = {
+                        idUser: priorityUser.idSender,
+                        timeChat: priorityUser.timeChat
+                    }
+                    if (!priorityReceiver) {
+                        priorityReceiver = [itemReceiver];
+                    } else {
+                        const index = _.findIndex(priorityReceiver, { 'idUser': itemReceiver.idUser });
+                        if (index !== -1) {
+                            priorityReceiver[index].timeChat = itemReceiver.timeChat;
+                        } else {
+                            priorityReceiver.push(itemReceiver);
+                        }
+                    }
+
+                    const idS = findSendUser[0].id;
+                    const idR = findReceiveUser[0].id;
+
+                    let updateSender = firestore.update({ collection: 'users', doc: idS }, { priority: prioritySender });
+                    let updateReceiver = firestore.update({ collection: 'users', doc: idR }, { priority: priorityReceiver });
+                    Promise.all([updateSender, updateReceiver]).then(() => {
                         console.log('update user');
                     })
                 }
+
                 if (priorityUser.updateStar) {
-                    console.log('have star', priorityUser);
-                    const item = {
+                    const itemStar = {
                         idUser: priorityUser.idReceiver,
                         star: priorityUser.star
                     }
-                    if (!priority) {
-                        priority = [item];
+                    if (!prioritySender) {
+                        prioritySender = [itemStar];
                     } else {
-                        const idx = _.findIndex(priority, { 'idUser': item.idUser });
-                        if(idx !== -1){
-                            priority[idx].star = item.star;
+                        const index = _.findIndex(prioritySender, { 'idUser': itemStar.idUser });
+                        if (index !== -1) {
+                            prioritySender[index].star = itemStar.star;
                         } else {
-                            priority.push(item);
+                            prioritySender.push(itemStar);
                         }
                     }
-                    const id = findUserResult[0].id;
-                    firestore.update({ collection: 'users', doc: id }, { priority }).then(() => {
-                        console.log('update user');
+                    const id = findSendUser[0].id;
+                    firestore.update({ collection: 'users', doc: id }, { priority: prioritySender }).then(() => {
+                        console.log('update star user');
                     })
                 }
-
             }
         })
-    }
-};
-
-export const updatePriority1 = (priorityUser) => {
-    return (dispatch, getState, { getFirestore, getFirebase }) => {
-        const firestore = getFirestore();
-        const firebase = getFirebase();
-
-        console.log(priorityUser);
-
     }
 };

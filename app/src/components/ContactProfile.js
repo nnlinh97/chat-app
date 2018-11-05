@@ -29,14 +29,14 @@ class ContactProfile extends Component {
         })
     }
 
-    onHandleStar = async () => {
+    onHandleStar = async (star) => {
         await this.setState({
             star: !this.state.star
         });
         this.props.updateUser({
             idSender: this.props.idSender,
             idReceiver: this.state.id,
-            star: this.state.star,
+            star: !star,
             updateStar: true
         });
     }
@@ -44,6 +44,8 @@ class ContactProfile extends Component {
 
     render() {
         const users = _.values(this.props.users);
+        const idSender = this.props.idSender;
+        console.log('users',users);
         const user = _.find(users, { 'uid': this.state.id });
         let username = '';
         let photoURL = '';
@@ -51,6 +53,7 @@ class ContactProfile extends Component {
         let lastSignInTime = '';
         let status = 'online';
         let css = "name-chat-box-online";
+        let classStar = 'fa fa-star uncheck';
         if (user) {
             username = user.username;
             photoURL = user.photoURL;
@@ -60,11 +63,9 @@ class ContactProfile extends Component {
                 status = moment(lastSignInTime.toDate()).calendar();
                 css = "name-chat-box-busy";
             }
-        }
-
-        let classStar = 'fa fa-star uncheck';
-        if (this.state.star) {
-            classStar = 'fa fa-star check'
+            if(user.star){
+                classStar = 'fa fa-star check';
+            }
         }
         return (
             <div className="contact-profile">
@@ -74,7 +75,7 @@ class ContactProfile extends Component {
                 <span id={css}></span>
                 <p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{status}</p>
                 <div className="rating-star">
-                    <span onClick={this.onHandleStar} className={classStar}></span>
+                    <span onClick={() => this.onHandleStar(user.star)} className={classStar}></span>
                 </div>
                 <SignOut />
             </div>

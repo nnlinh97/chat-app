@@ -8,14 +8,6 @@ import _ from 'lodash';
 import MenuUser from './MenuUser';
 import SearchUser from './SearchUser';
 
-
-// var findIndex = (array, name) => {
-//     let result = -1;
-//     array.forEach(element => {
-
-//     });
-// }
-
 class MenuListUsers extends Component {
     constructor(props) {
         super(props);
@@ -36,14 +28,36 @@ class MenuListUsers extends Component {
 
     render() {
         let { keyword } = this.state;
+        const uid = this.props.auth.uid;
         let list = _.values(this.props.users);
-        console.log(list);
+        const index = _.findIndex(list, { 'uid': uid });
+        let priority = [];
+        if (index !== -1) {
+            priority = list[index].priority;
+            if (priority) {
+                for (let i = 0; i < list.length; i++) {
+                    for (let j = 0; j < priority.length; j++) {
+                        if (list[i].uid == priority[j].idUser) {
+                            list[i].star = priority[j].star;
+                            list[i].timeChat = priority[j].timeChat;
+                        }
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < list.length; i++) {
+            list[i].scoreStar = list[i].star ? 100 * (new Date()) : 1;
+            list[i].scoreTime = list[i].timeChat ? list[i].timeChat.seconds : 0.9;
+        }
+        list.sort((a, b) => {
+            return ((b.scoreStar * b.scoreTime) - (a.scoreTime * a.scoreStar));
+        });
         const users = _.values(this.props.users).filter((user) => {
             return user.username.toLowerCase().indexOf(keyword) !== -1;
         })
         let usersList = null;
-        if (users.length > 0) {
-            usersList = users.map((user, index) => {
+        if (list.length > 0) {
+            usersList = list.map((user, index) => {
                 return (
                     <MenuUser
                         key={index}
