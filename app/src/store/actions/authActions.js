@@ -38,31 +38,6 @@ export const signIn = (callback) => {
                 dispatch({ type: 'LOGIN_FAIL' });
             })
         })
-
-        // console.log(user);
-        // firestore.get({ collection: 'users', where: [['email', '==', user.email]] }).then((res) => {
-        //     if (res.docs.length === 0) {
-        //         firestore.collection('users').add({
-        //             ...user
-        //         }).then(() => {
-        //             console.log("ADD SIGNIN_SUCCESS");
-        //             dispatch({ type: "SIGNIN_SUCCESS", user });
-        //         }).catch(err => {
-        //             console.log("SIGNIN_FAIL");
-        //             dispatch({ type: "SIGNIN_FAIL", err });
-        //         });
-        //     } else {
-        //         const id = res.docs[0].id;
-        //         const itemUpdate = {
-        //             ...user,
-        //             lastSignInTime: null
-        //         }
-        //         firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
-        //             console.log("SIGNIN_SUCCESS");
-        //             dispatch({ type: "SIGNIN_SUCCESS", user });
-        //         })
-        //     }
-        // })
     }
 };
 
@@ -83,7 +58,7 @@ export const signOut = (callback) => {
                     lastSignInTime: new Date(),
                     online: false
                 }
-                dispatch({type: 'CLEAR_CHATING_USER'});
+                dispatch({ type: 'CLEAR_CHATING_USER' });
                 localStorage.setItem('login', 'unlogged');
                 callback();
                 firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
@@ -93,42 +68,49 @@ export const signOut = (callback) => {
                 })
             }
         })
-        // firebase.auth().signOut().then(() => {
-        //     localStorage.setItem('login', 'unlogged');
-        //     dispatch({ type: 'SIGNOUT_SUCCESS' });
-        // }).then(() => {
-        //     callback();
-        // })
-        //     .catch((err) => {
-        //         console.log('logout fail');
-        //     })
-
-        // firestore.get({ collection: 'users', where: [['email', '==', user.email]] }).then((res) => {
-        //     if (res.docs.length > 0) {
-        //         const id = res.docs[0].id;
-        //         const itemUpdate = {
-        //             ...user,
-        //             lastSignInTime: new Date(),
-        //             online: false
-        //         }
-        //         firestore.update({ collection: 'users', doc: id }, itemUpdate).then(() => {
-        //             console.log("SIGNOUT_SUCCESS");
-        //             dispatch({ type: "SIGNOUT_SUCCESS" });
-        //         })
-        //     }
-        // })
     }
 };
 
-export const test = () => {
-    return (dispatch, getState, { getFirestore }) => {
+export const listenDisConnect = (uid) => {
+    return (dispatch, getState, { getFirestore, getFirebase }) => {
+        const firebase = getFirebase();
         const firestore = getFirestore();
-        console.log(firestore.update);
-        firestore.collection('users').get().then((querySnapshot) => {
-            // console.log(querySnapshot.docs);
-            querySnapshot.docs.forEach((item) => {
-                // console.log(item.data());                
-            })
+        var lastConnectedRef = firebase.database().ref('lastOnline/' + uid);
+        var connectedRef = firebase.database().ref("presence");
+        connectedRef.on("value", function (snap) {
+            let value = snap.val();
+            if (value) {
+                value = Object.entries(value);
+                value.forEach((item) => {
+                    firestore.get({ collection: 'users', where: [['uid', '==', item[0]]] }).then((data) => {
+                        if(data.docs.length > 0){
+                            const id = data.docs[0].id;
+                            firestore.update({collection: 'users', doc: id}, {online: true, lastSignInTime: null});
+                        }
+                    })
+                });  
+                lastConnectedRef.remove();
+                lastConnectedRef.onDisconnect().set({lastSignInTime: firebase.database.ServerValue.TIMESTAMP})
+            }
         })
+        var lastOnlineRef = firebase.database().ref('lastOnline');
+        lastOnlineRef.on("value", function(snap){
+            let value = snap.val();
+            console.log(value);
+            if(value){
+                value = Object.entries(value);
+                value.forEach((item) => {
+                    firestore.get({ collection: 'users', where: [['uid', '==', item[0]]] }).then((data) => {
+                        if(data.docs.length > 0){
+                            const id = data.docs[0].id;
+                            firestore.update({collection: 'users', doc: id}, {online: false, lastSignInTime: new Date()}).then(() => {
+                                console.log('updated user');
+                            })
+                        }
+                    })
+                });                
+            }
+        })
+
     }
 };

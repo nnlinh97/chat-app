@@ -45,7 +45,6 @@ class ContactProfile extends Component {
     render() {
         const users = _.values(this.props.users);
         const idSender = this.props.idSender;
-        console.log('users',users);
         const user = _.find(users, { 'uid': this.state.id });
         let username = '';
         let photoURL = '';

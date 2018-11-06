@@ -8,26 +8,24 @@ import '../styles/home.css'
 import SearchUser from '../components/SearchUser';
 import ChatContent from '../components/ChatContent';
 import {getDataUser} from '../store/actions/chatDataActions';
+import {listenDisConnect} from '../store/actions/authActions';
 
 class Home extends Component {
 
     componentDidMount() {
+        this.props.listenDisConnect(this.props.auth.uid);
         if (localStorage.getItem('login') === 'unlogged') {
             this.props.history.push('/');
         }
         const {id} = this.props.match.params;
         this.props.getDataUser(id);
-        console.log('componentDidMount');
     }
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.match.params.id);
         const { id } = nextProps.match.params;
         this.props.getDataUser(id);
     }
 
     render() {
-        // console.log(this.props.match.params.id);
-        console.log('render');
         const { auth } = this.props;
         const { displayName, photoURL } = auth;
         return (
@@ -55,7 +53,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getDataUser: (id) => dispatch(getDataUser(id))
+        getDataUser: (id) => dispatch(getDataUser(id)),
+        listenDisConnect: (uid) => dispatch(listenDisConnect(uid))
     }
 }
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home));
