@@ -52,8 +52,8 @@ class MenuListUsers extends Component {
         list.sort((a, b) => {
             return ((b.scoreStar * b.scoreTime) - (a.scoreTime * a.scoreStar));
         });
-        const users = _.values(this.props.users).filter((user) => {
-            return user.username.toLowerCase().indexOf(keyword) !== -1;
+        list = _.values(list).filter((user) => {
+            return user.username.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
         })
         let usersList = null;
         if (list.length > 0) {
