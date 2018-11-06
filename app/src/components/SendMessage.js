@@ -8,6 +8,7 @@ import moment from 'moment';
 import { sendMessage } from './../store/actions/messageActions';
 import { updatePriority } from './../store/actions/userActions';
 import storage from '../config/fbConfig';
+var randomstring = require("randomstring");
 
 class SendMessage extends Component {
     constructor(props) {
