@@ -45,13 +45,24 @@ class MenuListUsers extends Component {
                 }
             }
         }
+        let online = [];
+        let offline = [];
         for (let i = 0; i < list.length; i++) {
             list[i].scoreStar = list[i].star ? 100 * (new Date()) : 1;
             list[i].scoreTime = list[i].timeChat ? list[i].timeChat.seconds : 0.9;
+            if(list[i].online){
+                online.push(list[i])
+            } else {
+                offline.push(list[i])
+            }
         }
-        list.sort((a, b) => {
+        online.sort((a, b) => {
             return ((b.scoreStar * b.scoreTime) - (a.scoreTime * a.scoreStar));
         });
+        offline.sort((a, b) => {
+            return ((b.scoreStar * b.scoreTime) - (a.scoreTime * a.scoreStar));
+        });
+        list = online.concat(offline);
         list = _.values(list).filter((user) => {
             return user.username.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
         })

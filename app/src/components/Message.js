@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
+const isImageUrl = require('is-image-url');
+const urlRegex = require('url-regex');
 
 class Message extends Component {
     render() {
@@ -12,17 +14,19 @@ class Message extends Component {
                 return <img  key={index} title={title} className="image-message" src={img} alt="" />
             })
         }
-        if (message.text !== '') {
-            content = <p title={title}>
-                {message.text}
-                {images}
-            </p>;
+        const imgLinks = message.text.match(urlRegex());
+        let links = null;
+        if(imgLinks){
+            links = imgLinks.map((link, index) => {
+                return <img  key={index} title={title} className="image-message" src={link} alt="" />
+            })
         }
         return (
             <li className={status}>
                 <img src={message.photoURL} alt="" />
                 <p title={title}>
                     {message.text}
+                    {links}
                     {images}
                 </p>
             </li>
