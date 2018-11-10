@@ -106,10 +106,12 @@ class SendMessage extends Component {
 
     onDeletePreview = (index) => {
         this.inputFullNameRef.current.focus();
-        let images = this.state.previewURL;
+        let previewImg = this.state.previewURL;
+        let images = this.state.images;
         images.splice(index, 1);
+        previewImg.splice(index, 1);
         this.setState({
-            previewURL: images
+            previewURL: previewImg
         })
     }
 
@@ -124,6 +126,7 @@ class SendMessage extends Component {
     render() {
         let value = this.state.message;
         const { previewURL } = this.state;
+        console.log(previewURL);
         let previewImage = null;
         if (previewURL.length > 0) {
             previewImage = previewURL.map((url, index) => {

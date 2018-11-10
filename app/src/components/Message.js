@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-const isImageUrl = require('is-image-url');
-const urlRegex = require('url-regex');
 
 class Message extends Component {
     render() {
@@ -14,7 +12,7 @@ class Message extends Component {
                 return <img  key={index} title={title} className="image-message" src={img} alt="" />
             })
         }
-        const imgLinks = message.text.match(urlRegex());
+        const imgLinks = message.text.match(/(https?|ftp:)([^\s]+)/g);
         let links = null;
         if(imgLinks){
             links = imgLinks.map((link, index) => {
